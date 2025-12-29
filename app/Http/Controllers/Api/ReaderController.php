@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreReaderRequest;
 use App\Http\Requests\UpdateReaderRequest;
+use App\Http\Resources\ReaderCollection;
 use App\Http\Resources\ReaderResource;
 use App\Models\Reader;
 use Illuminate\Http\JsonResponse;
@@ -13,20 +14,11 @@ use Illuminate\Http\Response;
 
 class ReaderController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): ReaderCollection
     {
         $readers = Reader::paginate(10);
         
-        $readerResources = ReaderResource::collection($readers);
-        
-        return response()->json([
-            'data' => $readerResources,
-            'meta' => [
-                'current_page' => $readers->currentPage(),
-                'per_page' => $readers->perPage(),
-                'total' => $readers->total(),
-            ]
-        ]);
+        return new ReaderCollection($readers);
     }
 
     public function store(StoreReaderRequest $request): JsonResponse

@@ -28,6 +28,7 @@ class Book extends Model
     {
         return $this->hasMany(Loan::class);
     }
+    
     public function isAvailable(): bool
     {
         return $this->available_copies > 0;

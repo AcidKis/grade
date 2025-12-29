@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
+use App\Http\Resources\BookCollection;
 use App\Http\Resources\BookResource;
 use App\Models\Book;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +14,7 @@ use Illuminate\Http\Response;
 
 class BookController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): BookCollection
     {
         $query = Book::query();
         
@@ -49,16 +50,7 @@ class BookController extends Controller
 
         $books = $query->with('authors')->paginate(10);
         
-        $bookResources = BookResource::collection($books);
-        
-        return response()->json([
-            'data' => $bookResources,
-            'meta' => [
-                'current_page' => $books->currentPage(),
-                'per_page' => $books->perPage(),
-                'total' => $books->total(),
-            ]
-        ]);
+        return new BookCollection($books);
     }
 
     public function store(StoreBookRequest $request): JsonResponse

@@ -52,6 +52,14 @@ return [
 
     'channels' => [
 
+        'overdue_loans' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/overdue-loans.log'),
+            'level' => 'info',
+            'days' => 30,
+            'permission' => 0664,
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', (string) env('LOG_STACK', 'single')),

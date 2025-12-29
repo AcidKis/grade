@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAuthorRequest;
 use App\Http\Requests\UpdateAuthorRequest;
+use App\Http\Resources\AuthorCollection;
 use App\Http\Resources\AuthorResource;
 use App\Models\Author;
 use Illuminate\Http\JsonResponse;
@@ -13,20 +14,11 @@ use Illuminate\Http\Response;
 
 class AuthorController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AuthorCollection
     {
         $authors = Author::paginate(5);
         
-        $authorResources = AuthorResource::collection($authors);
-        
-        return response()->json([
-            'data' => $authorResources,
-            'meta' => [
-                'current_page' => $authors->currentPage(),
-                'per_page' => $authors->perPage(),
-                'total' => $authors->total(),
-            ]
-        ]);
+        return new AuthorCollection($authors);
     }
 
     public function store(StoreAuthorRequest $request): JsonResponse

@@ -4,9 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Loan extends Model
 {
+    use HasFactory;
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($loan) {
+            if (Loan::where('reader_id', $loan->reader_id)
+                ->where('book_id', $loan->book_id)
+                ->whereNull('returned_at')
+                ->exists()) {
+                throw new \App\Exceptions\DuplicateActiveLoanException();
+            }
+        });
+    }
+
     protected $fillable = [
         'book_id',
         'reader_id',

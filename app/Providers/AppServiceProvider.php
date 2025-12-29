@@ -3,15 +3,28 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Services\LoanService;
 
 class AppServiceProvider extends ServiceProvider
 {
+
+    protected $listen = [
+        BookLoaned::class => [
+            LogLoanActivity::class,
+        ],
+        BookReturned::class => [
+            LogLoanActivity::class,
+        ],
+    ];
+    
     /**
      * Register any application services.
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(LoanService::class, function ($app) {
+            return new LoanService();
+        });
     }
 
     /**
