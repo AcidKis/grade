@@ -7,15 +7,18 @@ use App\Models\Book;
 use App\Models\Loan;
 use App\Models\Reader;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class StatisticsController extends Controller
 {
     public function popularBooks(Request $request)
     {
-        $books = Book::withCount('loans')
-        ->orderBy('loans_count', 'desc')
-        ->limit(10)
-        ->get();
+        $books = Cache::remember('popular_books', 3600, function () {
+            return Book::withCount('loans')
+                ->orderBy('loans_count', 'desc')
+                ->limit(10)
+                ->get();
+        });
 
         return response()->json($books);
     }
